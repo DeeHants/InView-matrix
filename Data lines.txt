@@ -1,0 +1,8 @@
+I   IB                            OB  O
+I1  F   ---     Clock Y  ---      A   O1
+I2  A   ---     Enable   ---      F   O2
+I3  B   Data R     x     Data R   B   O3
+I4  E   ---     Strobe   ---      E   O4
+I5  C   Data Y     x     Data Y   C   O5
+I6  D   ---     Clock R  ---      D   O6
+
