@@ -3,9 +3,8 @@
 
 #include "hardware/gpio.h"
 
+#include "main.h"
 #include "pins.h"
-
-void init_pins();
 
 int main() {
     stdio_init_all();
