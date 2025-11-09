@@ -47,8 +47,8 @@ static inline void data_line_program_init(PIO pio, uint sm, uint offset, uint da
     sm_config_set_sideset_pins(&c, clock_pin);
 
     // Set the clock divider for the desired frequency
-    ; int cycles_per_bit = 4;
-    ; float div = clock_get_hz(clk_sys); / (freq * cycles_per_bit);
+    // int cycles_per_bit = 4;
+    // float div = clock_get_hz(clk_sys); / (freq * cycles_per_bit);
     float div = 0xffff; // Large divider to slow down for analysis
     printf("Using divisor %f", div);
     sm_config_set_clkdiv(&c, div);
