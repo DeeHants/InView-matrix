@@ -1,0 +1,60 @@
+; PIO program: data_line
+.program data_line
+
+; Implements a simple bit-banged data line where each loop does the following:
+;  1) pull bit (handled by OUT instruction + autopull configured on the host)
+;  2) set data pin according to bit
+;  3) set clock high (using sideset)
+;  4) wait for the high duration
+;  5) set clock low (using sideset)
+
+; This program expects the caller (C code) to configure the SM with:
+;  - sm_config_set_out_shift(&c, false, true, 32)  // shift out MSB first, autopull as desired
+;  - sm_config_set_sideset_pins(&c, CLOCK_PIN);
+;  - sm_config_set_out_pins(&c, DATA_PIN, 1) or pio_sm_set_consecutive_pindirs(...)
+;  - optionally configure clkdiv and FIFO join if packing words.
+
+; The program uses one side-set bit to drive the clock pin.
+.set 1
+.side_set 1
+
+; The data pin is driven by the `out pins, 1` instruction.
+.out 1 auto 8
+
+.fifo tx
+
+; FIXME Temporarily inverted the clock signal as the board uses an inverting buffer. Data is not inverted.
+; Pop a single bit from the OSR and write it to the data pin while keeping clock low
+out pins, 1    side 1 [1]   ; set data pin = next bit, clock low, small delay
+; Raise the clock (sideset=1) and hold for a short period
+nop            side 0 [1]   ; clock high
+; The host should push data words into the TX FIFO. With autopull configured and
+; out_shift set to 32, each 32-bit word will be shifted out MSB-first.
+
+% c-sdk {
+#include "hardware/clocks.h"
+
+static inline void data_line_program_init(PIO pio, uint sm, uint offset, uint data_pin, uint clock_pin, float freq) {
+    // Initialize pins
+    pio_gpio_init(pio, data_pin);
+    pio_sm_set_consecutive_pindirs(pio, sm, data_pin, 1, true);
+    pio_gpio_init(pio, clock_pin);
+    pio_sm_set_consecutive_pindirs(pio, sm, clock_pin, 1, true);
+
+    // Set the pins in the config
+    pio_sm_config c = data_line_program_get_default_config(offset);
+    sm_config_set_out_pins(&c, data_pin, 1);
+    sm_config_set_sideset_pins(&c, clock_pin);
+
+    // Set the clock divider for the desired frequency
+    ; int cycles_per_bit = 4;
+    ; float div = clock_get_hz(clk_sys); / (freq * cycles_per_bit);
+    float div = 0xffff; // Large divider to slow down for analysis
+    printf("Using divisor %f", div);
+    sm_config_set_clkdiv(&c, div);
+
+    // Go?
+    pio_sm_init(pio, sm, offset, &c);
+    pio_sm_set_enabled(pio, sm, true);
+}
+%}
