@@ -35,7 +35,11 @@ pico_sdk_init()
 
 # Add executable. Default name is the project name, version 0.1
 
-add_executable(scrolling_matrix main.cpp )
+add_executable(
+    scrolling_matrix
+    main.cpp
+    debug.cpp
+)
 
 pico_set_program_name(scrolling_matrix "scrolling_matrix")
 pico_set_program_version(scrolling_matrix "0.1")
