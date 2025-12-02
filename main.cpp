@@ -26,11 +26,8 @@ int main() {
 
     while (true) {
         printf("LED Matrix Controller Running...\n");
-        pio_sm_put_blocking(pio, dl_yellow, 0x21);
-        pio_sm_put_blocking(pio, dl_yellow, 0x43);
-        pio_sm_put_blocking(pio, dl_yellow, 0x65);
-        pio_sm_put_blocking(pio, dl_yellow, 0x87);
-        pio_sm_put_blocking(pio, dl_yellow, 0xa9);
+
+        render_frame();
 
         debug_step();
     }
@@ -76,4 +73,41 @@ void init_data_line_pio() {
     data_line_program_init(pio, dl_yellow, offset, PIN_DATA_Y, PIN_CLOCK_Y, 1.0f);
     dl_red = pio_claim_unused_sm(pio, true);
     data_line_program_init(pio, dl_red, offset, PIN_DATA_R, PIN_CLOCK_R, 1.0f);
+}
+
+void render_frame() {
+    uint delay = 10;
+
+    // Setup the initial register state by strobing with enable high
+    gpio_put(PIN_OUTPUT, HIGH);
+    gpio_put(PIN_STROBE, HIGH);
+    sleep_ms(delay);
+    gpio_put(PIN_STROBE, LOW);
+    // gpio_put(PIN_OUTPUT, LOW);
+
+    // Render a few rows
+    for (int row = 0; row < 8; row++) {
+        // Write a row
+        pio_sm_put_blocking(pio, dl_yellow, 0x21);
+        pio_sm_put_blocking(pio, dl_yellow, 0x43);
+        pio_sm_put_blocking(pio, dl_yellow, 0x65);
+        pio_sm_put_blocking(pio, dl_yellow, 0x87);
+        pio_sm_put_blocking(pio, dl_yellow, 0xa9);
+        while (!pio_sm_is_tx_fifo_empty(pio, dl_yellow)) tight_loop_contents();
+
+        // Strobe the data (but make sure enable is low for that moment)
+        gpio_put(PIN_OUTPUT, LOW);
+        gpio_put(PIN_OUTPUT, LOW);
+        gpio_put(PIN_OUTPUT, LOW);
+        gpio_put(PIN_OUTPUT, LOW);
+        gpio_put(PIN_OUTPUT, LOW);
+        gpio_put(PIN_OUTPUT, LOW);
+        gpio_put(PIN_OUTPUT, LOW);
+        gpio_put(PIN_OUTPUT, LOW);
+        // sleep_ms(delay);
+        gpio_put(PIN_STROBE, HIGH);
+        sleep_ms(delay);
+        gpio_put(PIN_STROBE, LOW);
+        gpio_put(PIN_OUTPUT, HIGH);
+    }
 }

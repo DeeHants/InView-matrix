@@ -11,6 +11,8 @@ void init_pins(void);
 
 void init_data_line_pio();
 
+void render_frame();
+
 #ifdef __cplusplus
 }
 #endif
