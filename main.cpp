@@ -41,32 +41,32 @@ void init_pins() {
     gpio_init(PIN_STROBE);
     gpio_set_dir(PIN_STROBE, true);
     gpio_pull_down(PIN_STROBE);
-    gpio_put(PIN_STROBE, false); // Start low (enabled)
+    gpio_put(PIN_STROBE, HIGH); // Start high (enabled)
 
     gpio_init(PIN_OUTPUT);
     gpio_set_dir(PIN_OUTPUT, true);
     gpio_pull_down(PIN_OUTPUT);
-    gpio_put(PIN_OUTPUT, false); // Start low (enabled)
+    gpio_put(PIN_OUTPUT, HIGH); // Start high (enabled)
 
     gpio_init(PIN_CLOCK_Y);
     gpio_set_dir(PIN_CLOCK_Y, true);
     gpio_pull_down(PIN_CLOCK_Y);
-    gpio_put(PIN_CLOCK_Y, true);
+    gpio_put(PIN_CLOCK_Y, LOW);
 
     gpio_init(PIN_DATA_Y);
     gpio_set_dir(PIN_DATA_Y, true);
     gpio_pull_down(PIN_DATA_Y);
-    gpio_put(PIN_DATA_Y, true);
+    gpio_put(PIN_DATA_Y, LOW);
 
     gpio_init(PIN_CLOCK_R);
     gpio_set_dir(PIN_CLOCK_R, true);
     gpio_pull_down(PIN_CLOCK_R);
-    gpio_put(PIN_CLOCK_R, true);
+    gpio_put(PIN_CLOCK_R, LOW);
 
     gpio_init(PIN_DATA_R);
     gpio_set_dir(PIN_DATA_R, true);
     gpio_pull_down(PIN_DATA_R);
-    gpio_put(PIN_DATA_R, true);
+    gpio_put(PIN_DATA_R, LOW);
 }
 
 void init_data_line_pio() {

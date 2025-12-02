@@ -8,4 +8,8 @@
 #define PIN_CLOCK_R 13 // 6
 #define PIN_DATA_R 15 // 3
 
+// Define logic levels (inverted as the board uses an inverting buffer)
+#define HIGH false
+#define LOW true
+
 #endif // PINS_H

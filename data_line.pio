@@ -23,11 +23,14 @@
 
 .fifo tx
 
-; FIXME Temporarily inverted the clock signal as the board uses an inverting buffer. Data is not inverted.
+; Define logic levels (inverted as the board uses an inverting buffer)
+.define HIGH 0
+.define LOW 1
+
 ; Pop a single bit from the OSR and write it to the data pin while keeping clock low
-out pins, 1    side 1 [1]   ; set data pin = next bit, clock low, small delay
+out pins, 1    side LOW [1]   ; set data pin = next bit, clock low, small delay
 ; Raise the clock (sideset=1) and hold for a short period
-nop            side 0 [1]   ; clock high
+nop            side HIGH [1]   ; clock high
 ; The host should push data words into the TX FIFO. With autopull configured and
 ; out_shift set to 32, each 32-bit word will be shifted out MSB-first.
 
